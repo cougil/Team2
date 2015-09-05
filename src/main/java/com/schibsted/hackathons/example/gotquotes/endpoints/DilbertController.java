@@ -6,8 +6,10 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.reactivex.netty.channel.StringTransformer;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.protocol.http.server.HttpServerResponse;
+import net.sf.cglib.core.Local;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -19,12 +21,17 @@ import scmspain.karyon.restrouter.annotation.QueryParam;
 import javax.ws.rs.HttpMethod;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Singleton
 @Endpoint
 public class DilbertController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DilbertController.class);
+    final String dateTimeFormatPattern = "yyyy-MM-dd";
 
     public DilbertController() {
     }
@@ -50,15 +57,18 @@ public class DilbertController extends BaseController {
     }
 
     @Path(value = "/api/dilbert", method = HttpMethod.GET)
-//    public Observable<Void> getQuote(HttpServerResponse<ByteBuf> response, @PathParam("date") String date) {
-    public Observable<Void> getQuote(HttpServerResponse<ByteBuf> response, @QueryParam(value = "date", required=false) String date) {
+    public Observable<Void> getQuote(HttpServerResponse<ByteBuf> response) {
+        return getQuote(response, getDefaultDate());
+    }
+
+        @Path(value = "/api/dilbert/{date}", method = HttpMethod.GET)
+    public Observable<Void> getQuote(HttpServerResponse<ByteBuf> response, @PathParam("date") String date) {
         LOGGER.debug("Dilber 'date' received: {}", date);
         JSONObject content = new JSONObject();
 
         try {
-            String ok = "OK";
-            URL url = new URL("http://dilbert.com/strip/2015-09-05");
-            content.put("URL", url);
+            LocalDate localDate = getDate(date);
+            content.put("date", localDate);
 
         } catch (JSONException e) {
             LOGGER.error("Error creating json response.", e);
@@ -71,5 +81,18 @@ public class DilbertController extends BaseController {
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         response.write(content.toString(), StringTransformer.DEFAULT_INSTANCE);
         return response.close();
+    }
+
+    private LocalDate getDate(String param) throws MalformedURLException {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatPattern);
+        LocalDate dateTime = (param != null) ? LocalDate.parse(param,formatter) : LocalDate.now();
+        LOGGER.info("Returning " + dateTime);
+        return dateTime;
+    }
+
+    private String getDefaultDate () {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatPattern);
+        LocalDate now = LocalDate.now();
+        return now.format(formatter);
     }
 }
