@@ -1,4 +1,6 @@
-# GoT Quotes microservice in Java 
+# GoT Quotes microservice in Java
+
+Changes... to Readme...
     
 ## Description
 
