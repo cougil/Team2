@@ -20,6 +20,7 @@ import java.util.Date;
 public class GilbertImageService {
 
     private static final String urlDilbert = "http://dilbert.com/strip/";
+    private final String dateTimeFormatPattern = "yyyy-MM-dd";
 
     private String getImageUrl(String url) {
         String result = null;
@@ -30,16 +31,14 @@ public class GilbertImageService {
                     element.attr("src")
                     : null;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new DilbertException();
         }
         return result;
     }
 
     private String createUrl(LocalDate date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Instant instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
-        Date res = Date.from(instant);
-        return  urlDilbert + sdf.format(res);
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatPattern);
+        return  urlDilbert + date.format(formatter);
     }
 
     public String getStripUrl(LocalDate date) {
@@ -51,5 +50,4 @@ public class GilbertImageService {
         }
         return result;
     }
-
 }
