@@ -1,6 +1,7 @@
 package com.schibsted.hackathons.example.gotquotes.endpoints;
 
 import com.google.inject.Singleton;
+import com.schibsted.hackathons.example.gotquotes.services.GilbertImageService;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.reactivex.netty.channel.StringTransformer;
@@ -32,6 +33,7 @@ public class DilbertController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DilbertController.class);
     final String dateTimeFormatPattern = "yyyy-MM-dd";
+    private GilbertImageService gilbertImageService = new GilbertImageService();
 
     public DilbertController() {
     }
@@ -68,7 +70,7 @@ public class DilbertController extends BaseController {
 
         try {
             LocalDate localDate = getDate(date);
-            content.put("date", localDate);
+            content.put("img", gilbertImageService.getStripUrl(localDate));
 
         } catch (JSONException e) {
             LOGGER.error("Error creating json response.", e);

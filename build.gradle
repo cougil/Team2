@@ -36,6 +36,7 @@ dependencies {
     compile 'com.netflix.karyon:karyon2-servo:2.7.1'
     compile 'com.scmspain.karyon:karyon-rest-router:1.1'
     compile 'com.netflix.blitz4j:blitz4j:1.36.0'
+    compile 'org.jsoup:jsoup:1.7.2'
 
     compile 'org.slf4j:slf4j-api:1.7.0'
     runtime 'org.slf4j:slf4j-simple:1.7.0'
