@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 @Singleton
 @Endpoint
-public class GotQuotesController {
+public class GotQuotesController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GotQuotesController.class);
 
@@ -54,27 +54,6 @@ public class GotQuotesController {
 
     public GotQuotesController() {
     }
-
-    // This endpoint shouldn't be removed since will be always needed
-    // Healthcheck endpoint needed by Asgard to validate the service is working
-    @Path(value = "/healthcheck", method = HttpMethod.GET)
-    public Observable<Void> healthcheck(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
-        response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
-        response.setStatus(HttpResponseStatus.OK);
-        response.write("{\"status\":\"ok\"}", StringTransformer.DEFAULT_INSTANCE);
-        return response.close();
-    }
-
-    // This endpoint shouldn't be removed since will be always needed
-    // Healthcheck endpoint needed by Prana to validate the service is working
-    @Path(value = "/Status", method = HttpMethod.GET)
-    public Observable<Void> status(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
-        response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
-        response.setStatus(HttpResponseStatus.OK);
-        response.write("Eureka!", StringTransformer.DEFAULT_INSTANCE);
-        return response.close();
-    }
-
 
     @Path(value = "/api/quote/{action}", method = HttpMethod.GET)
     public Observable<Void> getQuote(HttpServerResponse<ByteBuf> response, @PathParam("action") String action) {
